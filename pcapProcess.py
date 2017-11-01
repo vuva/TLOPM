@@ -4,10 +4,11 @@ import csv
 import json
 import sys
 import hashlib
-
+import ipaddress
 TCP_PROTO = 6
 RETRANSMISSION_TIMEOUT = 2.0
 DEFAULT_OUTPUT = 'TLOWPM.dat'
+debug=False
 class PacketData:
     def __init__(self, no, timestamp, source, srcport, dest, destport, protocol, length, seq, ack):
         self.no= no
@@ -29,10 +30,12 @@ def main(argv):
     parser.add_argument('-saddr', dest='sourceAddresses', nargs='+', help='Sender address')
     parser.add_argument('-daddr', dest='destinationAddresses', nargs='+', help='Receiver address')
     parser.add_argument('-o', dest='outputFile', default=DEFAULT_OUTPUT, help='Output filename')
+    parser.add_argument('-v','--verbosity', help="increase output verbosity")
+
     args = parser.parse_args()
     src_addresses = args.sourceAddresses
     dst_addresses = args.destinationAddresses
-
+    debug=args.verbosity
     print('Parsing Sender Pcap ...')
     sent_packets_pcap=dict()
     for sender_file_name in args.senderPcapFiles:
@@ -84,7 +87,7 @@ def generate_hash_key(packet, protocol):
     if protocol == 'MPTCP':
         hash_func.update(('proto' + repr(packet.protocol)).encode("UTF-8"))
         hash_func.update(('dst'+repr(packet.dest)).encode("UTF-8"))
-        hash_func.update(('dst'+repr(packet.destport)).encode("UTF-8"))
+        hash_func.update(('dstp'+repr(packet.destport)).encode("UTF-8"))
         hash_func.update(('dataseq'+repr(packet.rawdataseqno)).encode("UTF-8"))
         hash_func.update(('dataack'+repr(packet.rawdataackno)).encode("UTF-8"))
     elif protocol=='TCP':
@@ -92,7 +95,7 @@ def generate_hash_key(packet, protocol):
         hash_func.update(('src'+repr(packet.source)).encode("UTF-8"))
         hash_func.update(('srcp'+repr(packet.srcport)).encode("UTF-8"))
         hash_func.update(('dst'+repr(packet.dest)).encode("UTF-8"))
-        hash_func.update(('dst'+repr(packet.destport)).encode("UTF-8"))
+        hash_func.update(('dstp'+repr(packet.destport)).encode("UTF-8"))
         hash_func.update(('seq'+repr(packet.seq)).encode("UTF-8"))
         hash_func.update(('ack'+repr(packet.ack)).encode("UTF-8"))
         hash_func.update(('len'+repr(packet.length)).encode("UTF-8"))
@@ -141,9 +144,13 @@ def impt_csv(pcap_filename, protocol):
             if protocol=='MPTCP':
                 packet.rawdataseqno = int(data_entry[10]) if data_entry[10] is not '' else None
                 packet.rawdataackno = int(data_entry[11]) if data_entry[11] is not '' else None
+            elif protocol=='TCP':
+                packet.rawdataseqno = -1;
+                packet.rawdataackno = -1;
+
             if packet is not None:
                 hash_key = generate_hash_key(packet, protocol)
-                if hash_key in packets:
+                if hash_key in packets and debug:
                     print('Retransmitted packet: ')
                     print(packet.__dict__)
                     print('of')
@@ -202,10 +209,11 @@ def process_tcp(sender_pcap, receiver_pcap, src_addrs, dst_addrs):
         sent_len = sent_packet.length
         if sent_packet_key in receiver_pcap:
             depart_arrive_pairs.append(
-                {'index': index, 'seq': sent_seq, 'ack': sent_ack, 'departure_time': sent_packet.timestamp,
-                 'arrival_time': receiver_pcap[sent_packet_key].timestamp, 'dataseq': sent_packet.rawdataseqno, 'dataack': sent_packet.rawdataackno})
+                {'index': index, 'src':int(ipaddress.ip_address(sent_src)), 'dst':int(ipaddress.ip_address(sent_dst)), 'seq': sent_seq, 'ack': sent_ack, 'departure_time': sent_packet.timestamp,
+                 'arrival_time': receiver_pcap[sent_packet_key].timestamp, 'dataseq': sent_packet.rawdataseqno, 'dataack': sent_packet.rawdataackno, 'latency': receiver_pcap[sent_packet_key].timestamp-sent_packet.timestamp})
             index+=1
-            print(repr(index) + '/' + repr(size))
+            if debug:
+                print(repr(index) + '/' + repr(size))
 
     print('Total measured packets: ' + repr(len(depart_arrive_pairs)))
     # print(retransmission_packets)
@@ -214,4 +222,3 @@ def process_tcp(sender_pcap, receiver_pcap, src_addrs, dst_addrs):
 
 if __name__ == "__main__":
     main(sys.argv)
-
