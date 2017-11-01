@@ -2,6 +2,7 @@
 export n=$2
 export SL_ONTIME=5
 export SL_OFFTIME=3
+export SL_EXPTIME=$2
 export SL_FILE=$2
 EXP_TYPE=$1
 for ((i=1;i<=n;i++)); do
