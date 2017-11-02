@@ -31,6 +31,7 @@ def main(argv):
     parser.add_argument('-daddr', dest='destinationAddresses', nargs='+', help='Receiver address')
     parser.add_argument('-o', dest='outputFile', default=DEFAULT_OUTPUT, help='Output filename')
     parser.add_argument('-v','--verbosity', help="increase output verbosity")
+    parser.add_argument('-r','--reversed', help="seperate ack")
 
     args = parser.parse_args()
     src_addresses = args.sourceAddresses
@@ -70,12 +71,25 @@ def main(argv):
     print('Writing results to ' + args.outputFile + ' ...')
     outputFile = open(args.outputFile, 'w', newline='')
     outputWriter = csv.writer(outputFile)
+    if args.reversed:
+        reversedOutputFile = open('reversed-'+args.outputFile, 'w', newline='')
+        reversedOutputWriter = csv.writer(reversedOutputFile)
     for entry in processed_data:
         row_data=[]
+        reversed_row_data=[]
         for key in entry:
-            row_data.append(entry[key])
+            if args.reversed and entry['dst']==args.destinationAddresses:
+                reversed_row_data.append(entry[key])
+            else:
+                row_data.append(entry[key])
+
         outputWriter.writerow(row_data)
+        if args.reversed:
+            reversedOutputWriter.writerow(reversed_row_data)
+
     outputFile.close()
+    if args.reversed:
+        reversedOutputFile.close()
     # draw_plot(processed_data)
 
 def export_json_data(data, outfileName):
