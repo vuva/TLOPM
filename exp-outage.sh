@@ -1,5 +1,5 @@
 #/bin/bash
-export n=$2
+export n=$3
 export SL_ONTIME=5
 export SL_OFFTIME=3
 export SL_EXPTIME=$2
