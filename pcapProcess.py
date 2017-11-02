@@ -5,6 +5,8 @@ import json
 import sys
 import hashlib
 import ipaddress
+import socket
+import struct
 TCP_PROTO = 6
 RETRANSMISSION_TIMEOUT = 2.0
 DEFAULT_OUTPUT = 'TLOWPM.dat'
@@ -62,9 +64,9 @@ def main(argv):
     # received_packets_pcap.sort(key=lambda t:'t.timestamp')
 
     print('Filtering Sender Pcap ...')
-    senderPcap=filter_pcap(sent_packets_pcap, src_addresses, dst_addresses)
+    senderPcap=filter_pcap(sent_packets_pcap, src_addresses, dst_addresses, args.reversed)
     print('Filtering Receiver Pcap ...')
-    receiverPcap=filter_pcap(received_packets_pcap, src_addresses, dst_addresses)
+    receiverPcap=filter_pcap(received_packets_pcap, src_addresses, dst_addresses,args.reversed)
     print('Processing Pcap ...')
     processed_data = process_tcp(senderPcap,receiverPcap, src_addresses, dst_addresses)
 
@@ -79,7 +81,8 @@ def main(argv):
         for key in entry:
             row_data.append(entry[key])
 
-        if args.reversed and entry['dst']==args.destinationAddresses::
+        if args.reversed and socket.inet_ntoa(struct.pack('!L', entry['src'])) in args.destinationAddresses:
+            row_data[9]= -row_data[9]
             reversedOutputWriter.writerow(row_data)
         else:
             outputWriter.writerow(row_data)
@@ -193,11 +196,14 @@ def impt_csv(pcap_filename, protocol):
 #     # plt.plot(index, arrive, color='blue')
 #     plt.show()
 
-def filter_pcap(pcap_list, src_adds, dst_adds):
+def filter_pcap(pcap_list, src_adds, dst_adds, reversed):
     result=dict()
     for packet in pcap_list:
         if  (pcap_list[packet].protocol == TCP_PROTO and pcap_list[packet].source in src_adds and pcap_list[packet].dest in dst_adds ):
             result[packet] = pcap_list[packet]
+        elif reversed and pcap_list[packet].source in dst_adds and pcap_list[packet].dest in src_adds:
+            result[packet] = pcap_list[packet]
+
 
     return result
 

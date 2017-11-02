@@ -1,4 +1,4 @@
-n=2;
+n=1;
 global RTT;
 RTT=0.1;
 set(0,'DefaultFigureWindowStyle','docked')
@@ -8,7 +8,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
 prefix='C:\Work\Data\';
 distribution_name = 'on5-off3';
-exp_name = 'reversed-iperf-non-interupted';
+exp_name = 'iperf-non-interupted';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
