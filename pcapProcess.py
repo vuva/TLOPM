@@ -30,8 +30,8 @@ def main(argv):
     parser.add_argument('-saddr', dest='sourceAddresses', nargs='+', help='Sender address')
     parser.add_argument('-daddr', dest='destinationAddresses', nargs='+', help='Receiver address')
     parser.add_argument('-o', dest='outputFile', default=DEFAULT_OUTPUT, help='Output filename')
-    parser.add_argument('-v','--verbosity', help="increase output verbosity")
-    parser.add_argument('-r','--reversed', help="seperate ack")
+    parser.add_argument('-v','--verbosity', help="increase output verbosity",action="store_true")
+    parser.add_argument('-r','--reversed', help="seperate ack",action="store_true")
 
     args = parser.parse_args()
     src_addresses = args.sourceAddresses
@@ -76,16 +76,13 @@ def main(argv):
         reversedOutputWriter = csv.writer(reversedOutputFile)
     for entry in processed_data:
         row_data=[]
-        reversed_row_data=[]
         for key in entry:
-            if args.reversed and entry['dst']==args.destinationAddresses:
-                reversed_row_data.append(entry[key])
-            else:
-                row_data.append(entry[key])
+            row_data.append(entry[key])
 
-        outputWriter.writerow(row_data)
-        if args.reversed:
-            reversedOutputWriter.writerow(reversed_row_data)
+        if args.reversed and entry['dst']==args.destinationAddresses::
+            reversedOutputWriter.writerow(row_data)
+        else:
+            outputWriter.writerow(row_data)
 
     outputFile.close()
     if args.reversed:
