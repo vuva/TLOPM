@@ -31,12 +31,13 @@ export SL_EX=$EXP_TYPE"-interupted-lowrtt-on"$SL_ONTIME"-off"$SL_OFFTIME
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
-sudo ip link set dev eth2 multipath off
+ssh vuva@pc21.filab.uni-hannover.de 'sudo ip link set dev eth4 multipath off'
 sleep 10
 export SL_EX=$EXP_TYPE"-interupted-sp-on"$SL_ONTIME"-off"$SL_OFFTIME
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
-sudo ip link set dev eth2 multipath on
+ssh vuva@pc21.filab.uni-hannover.de 'sudo ip link set dev eth4 multipath off'
 sleep 20
 
 done
+rm ~/*.zip.*
 echo done

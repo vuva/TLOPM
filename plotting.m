@@ -6,7 +6,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='C:\Work\Data\';
+prefix='D:\Data\';
 distribution_name = 'on5-off3';
 exp_name = 'iperf-non-interupted';
 lrtt_latency=[];
