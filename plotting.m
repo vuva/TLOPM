@@ -1,4 +1,4 @@
-n=1;
+n=5;
 global RTT;
 RTT=0.1;
 set(0,'DefaultFigureWindowStyle','docked')
@@ -6,9 +6,9 @@ set(0,'DefaultFigureWindowStyle','docked')
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\';
+prefix='C:\Work\Data\';
 distribution_name = 'on5-off3';
-exp_name = 'iperf-non-interupted';
+exp_name = 'reversed-wget-non-interupted';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
