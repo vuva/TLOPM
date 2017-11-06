@@ -1,4 +1,4 @@
-n=5;
+n=1;
 global RTT;
 RTT=0.1;
 set(0,'DefaultFigureWindowStyle','docked')
@@ -9,7 +9,7 @@ set(0,'DefaultFigureWindowStyle','docked')
 prefix='D:\Data\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'ditg-greedy-non-interupted';
+exp_name = 'iperf-asym-interupted';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
