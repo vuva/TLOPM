@@ -5,7 +5,7 @@ import os
 import time
 
 TVEC_COMMAND = 'tevc -e spork-join/VPlayGround now '
-LOWER_BOUND = 5
+LOWER_BOUND = 2
 def get_random_num(distribution, parameters):
     rannum=-1
     if distribution == 'poi':
@@ -25,7 +25,7 @@ def get_random_num(distribution, parameters):
 
 def set_delay(connection, value):
     print(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
-    os.system(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
+    #os.system(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Provide distribution and parameters')
@@ -47,7 +47,7 @@ def main(argv):
             print(inter_mod_time)
             if latency_dis is not None:
                 new_latency = get_random_num(latency_dis, args.latency)
-                set_delay(args.connection, new_latency)
+                set_delay(args.connection, round(new_latency))
             time.sleep(inter_mod_time)
     except KeyboardInterrupt:
         print('Shutdown requested...exiting')
