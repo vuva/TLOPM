@@ -1,4 +1,4 @@
-n=10;
+n=5;
 global RTT;
 RTT=0.1;
 set(0,'DefaultFigureWindowStyle','docked')
@@ -6,9 +6,10 @@ set(0,'DefaultFigureWindowStyle','docked')
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='C:\Work\Data\';
+prefix='D:\Data\';
 distribution_name = 'on5-off3';
-exp_name = 'reversed-ditg-non-interupted';
+global exp_name;
+exp_name = 'ditg-greedy-non-interupted';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -26,9 +27,25 @@ for i=1:n
 end
 plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
+plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
+function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency)
+    global exp_name;
+    figure
+    
+    getccdf(lrtt_latency);
+    hold on;
+    getccdf(rr_latency);
+    hold on;
+    getccdf(re_latency);
+    hold on;
+    getccdf(sp_latency);
+    hold on;
+    title(strcat('CCDF-',exp_name));
+    legend('LowRTT','RR','Redundant','SP');
+end
 
-function[xccdf,yccdf] = plotccdf(value)
+function[xccdf,yccdf] = getccdf(value)
     [ycdf,xcdf] = cdfcalc(value);
     xccdf = xcdf;
     yccdf = 1-ycdf(1:end-1);
@@ -43,7 +60,7 @@ re_latency = re_latency(re_latency(:, end) >=0.05, :);
 re_latency = re_latency(re_latency(:, end) <1, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
-global RTT;
+global RTT exp_name;
 figure 
 ksdensity(lrtt_latency/RTT,'npoints',10000);
 hold on;
@@ -52,21 +69,22 @@ hold on;
 ksdensity(re_latency/RTT,'npoints',10000);
 hold on;
 ksdensity(sp_latency/RTT,'npoints',10000);
+title(strcat('PDF-',exp_name));
 legend('LowRTT','RR','Redundant','SP');
 
-figure 
-histogram(lrtt_latency/RTT,10000,'Normalization','probability');
-hold on;
-histogram(rr_latency/RTT,10000,'Normalization','probability');
-hold on;
-histogram(re_latency/RTT,10000,'Normalization','probability');
-hold on;
-histogram(sp_latency/RTT,10000,'Normalization','probability');
-legend('LowRTT','RR','Redundant','SP');
+% figure 
+% histogram(lrtt_latency/RTT,10000,'Normalization','probability');
+% hold on;
+% histogram(rr_latency/RTT,10000,'Normalization','probability');
+% hold on;
+% histogram(re_latency/RTT,10000,'Normalization','probability');
+% hold on;
+% histogram(sp_latency/RTT,10000,'Normalization','probability');
+% legend('LowRTT','RR','Redundant','SP');
 end
 
 function[]=plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency)
-global RTT;
+global RTT exp_name;
 figure 
 cdfplot(lrtt_latency/RTT);
 hold on;
@@ -75,6 +93,7 @@ hold on;
 cdfplot(re_latency/RTT);
 hold on;
 cdfplot(sp_latency/RTT);
+title(strcat('CDF-',exp_name));
 legend('LowRTT','RR','Redundant','SP');
 end
 
