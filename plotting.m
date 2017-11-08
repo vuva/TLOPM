@@ -1,4 +1,4 @@
-n=1;
+n=5;
 global RTT;
 RTT=0.1;
 set(0,'DefaultFigureWindowStyle','docked')

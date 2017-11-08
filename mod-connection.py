@@ -25,7 +25,7 @@ def get_random_num(distribution, parameters):
 
 def set_delay(connection, value):
     print(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
-    #os.system(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
+    os.system(TVEC_COMMAND + connection + ' modify delay=' + repr(value) + 'ms')
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Provide distribution and parameters')
