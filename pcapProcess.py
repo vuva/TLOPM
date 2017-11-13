@@ -112,7 +112,7 @@ def generate_hash_key(packet, protocol):
         hash_func.update(('dstp'+repr(packet.destport)).encode("UTF-8"))
         hash_func.update(('seq'+repr(packet.seq)).encode("UTF-8"))
         hash_func.update(('ack'+repr(packet.ack)).encode("UTF-8"))
-        hash_func.update(('len'+repr(packet.length)).encode("UTF-8"))
+        #hash_func.update(('len'+repr(packet.length)).encode("UTF-8"))
     return hash_func.hexdigest()
 
 
