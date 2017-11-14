@@ -1,6 +1,6 @@
-n=1;
+n=5;
 global RTT;
-RTT=0.1;
+RTT=1;
 set(0,'DefaultFigureWindowStyle','docked')
 % rr_dat =cell2mat(loadjson('roundrobin-interupted-data.json')); 
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
@@ -19,12 +19,13 @@ for i=1:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',distribution_name, '-',num2str(i), '.dat' ));
     rr_dat = csvread(strcat(prefix,exp_name,'-rr-',distribution_name, '-', num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-',distribution_name, '-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-sp-',distribution_name, '-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-re-',distribution_name, '-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(:,10));
     rr_latency=vertcat(rr_latency,rr_dat(:,10));
     re_latency=vertcat(re_latency,re_dat(:,10));
     sp_latency=vertcat(sp_latency,sp_dat(:,10));
 end
+[lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
 plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
@@ -51,13 +52,15 @@ function[xccdf,yccdf] = getccdf(value)
     yccdf = 1-ycdf(1:end-1);
     plot(xccdf,yccdf);
 end
-function[]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) >=0.05, :);
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) <1, :);
-rr_latency = rr_latency(rr_latency(:, end) >=0.05, :);
-rr_latency = rr_latency(rr_latency(:, end) <1, :);
-re_latency = re_latency(re_latency(:, end) >=0.05, :);
-re_latency = re_latency(re_latency(:, end) <1, :);
+function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) >=0.00, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) <10, :);
+rr_latency = rr_latency(rr_latency(:, end) >=0.00, :);
+rr_latency = rr_latency(rr_latency(:, end) <10, :);
+re_latency = re_latency(re_latency(:, end) >=0.00, :);
+re_latency = re_latency(re_latency(:, end) <10, :);
+sp_latency = sp_latency(sp_latency(:, end) >=0.00, :);
+sp_latency = sp_latency(sp_latency(:, end) <10, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
 global RTT exp_name;

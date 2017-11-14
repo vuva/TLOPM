@@ -152,6 +152,7 @@ def impt_csv(pcap_filename, protocol):
     packets_data=list(packet_reader)
     packets_data.sort(key=lambda p: p[1])
     packets = dict()
+    dup_packets_count=0
     for data_entry in packets_data:
         try:
             packet= PacketData(int(data_entry[0]), float(data_entry[1]),data_entry[2], int(data_entry[3]),data_entry[4], int(data_entry[5]),int(data_entry[6]),int(data_entry[7]),int(data_entry[8]) if data_entry[8] is not '' else None,int(data_entry[9]) if data_entry[9] is not '' else None)
@@ -164,11 +165,13 @@ def impt_csv(pcap_filename, protocol):
 
             if packet is not None:
                 hash_key = generate_hash_key(packet, protocol)
-                if hash_key in packets and debug:
-                    print('Retransmitted packet: ')
-                    print(packet.__dict__)
-                    print('of')
-                    print(packets[hash_key].__dict__)
+                if hash_key in packets:
+                    dup_packets_count+=1
+                    if debug:
+                        print('Retransmitted packet: ')
+                        print(packet.__dict__)
+                        print('of')
+                        print(packets[hash_key].__dict__)
                 else:
                     packets[hash_key] = packet
         except Exception as e:
@@ -176,6 +179,7 @@ def impt_csv(pcap_filename, protocol):
             # print(packets.__dict__)
             # raise
             continue
+    print('Retransmitted packets: ' + repr(dup_packets_count) + '/'+ repr(len(packets_data)))
     return packets
 
 
