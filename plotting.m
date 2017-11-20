@@ -1,31 +1,33 @@
-n=5;
+k=1;
+n=10;
 global RTT;
 RTT=1;
-set(0,'DefaultFigureWindowStyle','docked')
+set(0,'DefaultFigureWindowStyle','docked');
+set(0,'DefaultLineLineWidth',1);
 % rr_dat =cell2mat(loadjson('roundrobin-interupted-data.json')); 
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\DAG-tcpdump';
+prefix='D:\Data\loss0.01-10-times\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'iperf-non-interupted';
+exp_name = 'dag-iperf-loss0.01';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
 sp_latency=[];
 
-for i=1:n
-    lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',distribution_name, '-',num2str(i), '.dat' ));
-    rr_dat = csvread(strcat(prefix,exp_name,'-rr-',distribution_name, '-', num2str(i), '.dat' ));
-    re_dat = csvread(strcat(prefix,exp_name,'-re-',distribution_name, '-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-re-',distribution_name, '-', num2str(i), '.dat' ));
+for i=k:n
+    lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
+    rr_dat = csvread(strcat(prefix,exp_name,'-rr-', num2str(i), '.dat' ));
+    re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-sp-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(:,10));
     rr_latency=vertcat(rr_latency,rr_dat(:,10));
     re_latency=vertcat(re_latency,re_dat(:,10));
     sp_latency=vertcat(sp_latency,sp_dat(:,10));
 end
-[lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
+[lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
@@ -54,13 +56,13 @@ function[xccdf,yccdf] = getccdf(value)
 end
 function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
 lrtt_latency = lrtt_latency(lrtt_latency(:, end) >=0.00, :);
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) <10, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) <5, :);
 rr_latency = rr_latency(rr_latency(:, end) >=0.00, :);
-rr_latency = rr_latency(rr_latency(:, end) <10, :);
+rr_latency = rr_latency(rr_latency(:, end) <5, :);
 re_latency = re_latency(re_latency(:, end) >=0.00, :);
-re_latency = re_latency(re_latency(:, end) <10, :);
+re_latency = re_latency(re_latency(:, end) <5, :);
 sp_latency = sp_latency(sp_latency(:, end) >=0.00, :);
-sp_latency = sp_latency(sp_latency(:, end) <10, :);
+sp_latency = sp_latency(sp_latency(:, end) <5, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
 global RTT exp_name;
@@ -108,4 +110,16 @@ figure
 ksdensity(subflow1(:,10)/RTT,'npoints',10000);
 hold on;
 ksdensity(subflow2(:,10)/RTT,'npoints',10000);
+end
+
+function[]=plotdagvsdump()
+figure
+plot(tcpdump_dat(:,6));
+hold on;
+plot(tcpdump_dat(:,7));
+hold on;
+plot(dag_dat(:,6));
+hold on;
+plot(dag_dat(:,7));
+legend('tcpdump-send','tcpdump-recv','dag-send','dag-recv');
 end
