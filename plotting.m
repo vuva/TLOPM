@@ -1,5 +1,5 @@
 k=1;
-n=10;
+n=1;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -8,10 +8,10 @@ set(0,'DefaultLineLineWidth',1);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\loss0.01-10-times\';
+prefix='C:\Work\Data\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-loss0.01';
+exp_name = 'sp-iperf';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -28,12 +28,14 @@ for i=k:n
     sp_latency=vertcat(sp_latency,sp_dat(:,10));
 end
 [lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency);
-plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
+% plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
+
 plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency)
     global exp_name;
+    
     figure
     
     getccdf(lrtt_latency);
@@ -45,7 +47,8 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency)
     getccdf(sp_latency);
     hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','RR','Redundant','SP');
+    legend('LowRTT','RR','Redundant','SP');   
+    set(gca, 'YScale', 'log');
 end
 
 function[xccdf,yccdf] = getccdf(value)
@@ -114,12 +117,12 @@ end
 
 function[]=plotdagvsdump()
 figure
-plot(tcpdump_dat(:,6));
+scatter(dump_sp_dat(:,1),dump_sp_dat(:,6));
 hold on;
-plot(tcpdump_dat(:,7));
+scatter(dump_sp_dat(:,1),dump_sp_dat(:,7));
 hold on;
-plot(dag_dat(:,6));
+scatter(dag_sp_dat(:,1),dag_sp_dat(:,6));
 hold on;
-plot(dag_dat(:,7));
+scatter(dag_sp_dat(:,1),dag_sp_dat(:,7));
 legend('tcpdump-send','tcpdump-recv','dag-send','dag-recv');
 end
