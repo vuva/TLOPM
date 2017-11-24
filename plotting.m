@@ -115,14 +115,3 @@ hold on;
 ksdensity(subflow2(:,10)/RTT,'npoints',10000);
 end
 
-function[]=plotdagvsdump()
-figure
-scatter(dump_sp_dat(:,1),dump_sp_dat(:,6));
-hold on;
-scatter(dump_sp_dat(:,1),dump_sp_dat(:,7));
-hold on;
-scatter(dag_sp_dat(:,1),dag_sp_dat(:,6));
-hold on;
-scatter(dag_sp_dat(:,1),dag_sp_dat(:,7));
-legend('tcpdump-send','tcpdump-recv','dag-send','dag-recv');
-end
