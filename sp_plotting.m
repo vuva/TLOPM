@@ -2,7 +2,7 @@ n=2;
 
 set(0,'DefaultFigureWindowStyle','docked')
 
-prefix='C:\Work\Data\';
+prefix='C:\Work\Data\dump-delay\';
 sp_latency=[];
 sprou_latency=[];
 
