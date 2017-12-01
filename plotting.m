@@ -1,5 +1,5 @@
 k=1;
-n=2;
+n=1;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -8,10 +8,10 @@ set(0,'DefaultLineLineWidth',1);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\sp-loss0.01\';
+prefix='D:\Data\no-adapter-ts\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'sp-iperf';
+exp_name = 'iperf-loss0.01';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -22,10 +22,10 @@ for i=k:n
     rr_dat = csvread(strcat(prefix,exp_name,'-rr-', num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
     sp_dat = csvread(strcat(prefix,exp_name,'-sp-', num2str(i), '.dat' ));
-    lrtt_latency=vertcat(lrtt_latency,lrtt_dat(:,10));
-    rr_latency=vertcat(rr_latency,rr_dat(:,10));
-    re_latency=vertcat(re_latency,re_dat(:,10));
-    sp_latency=vertcat(sp_latency,sp_dat(:,10));
+    lrtt_latency=vertcat(lrtt_latency,lrtt_dat(100:end-100,10));
+    rr_latency=vertcat(rr_latency,rr_dat(100:end-100,10));
+    re_latency=vertcat(re_latency,re_dat(100:end-100,10));
+    sp_latency=vertcat(sp_latency,sp_dat(100:end-100,10));
 end
 [lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency);
 % plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
@@ -59,13 +59,13 @@ function[xccdf,yccdf] = getccdf(value)
 end
 function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
 lrtt_latency = lrtt_latency(lrtt_latency(:, end) >=0.00, :);
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) <5, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) <1, :);
 rr_latency = rr_latency(rr_latency(:, end) >=0.00, :);
-rr_latency = rr_latency(rr_latency(:, end) <5, :);
+rr_latency = rr_latency(rr_latency(:, end) <1, :);
 re_latency = re_latency(re_latency(:, end) >=0.00, :);
-re_latency = re_latency(re_latency(:, end) <5, :);
+re_latency = re_latency(re_latency(:, end) <1, :);
 sp_latency = sp_latency(sp_latency(:, end) >=0.00, :);
-sp_latency = sp_latency(sp_latency(:, end) <5, :);
+sp_latency = sp_latency(sp_latency(:, end) <1, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
 global RTT exp_name;
@@ -109,9 +109,19 @@ function[]=plotsubflows(latency_dat)
 global RTT;
 subflow1 = latency_dat(~ismember(latency_dat(:,2),[167838210]),:);
 subflow2 = latency_dat(~ismember(latency_dat(:,2),[167838466]),:);
-figure
-ksdensity(subflow1(:,10)/RTT,'npoints',10000);
+% figure
+% ksdensity(subflow1(:,10)/RTT,'npoints',10000);
+% hold on;
+% ksdensity(subflow2(:,10)/RTT,'npoints',10000);
+figure;
+scatter(subflow1(:,1),subflow1(:,6),'MarkerEdgeColor','blue');
 hold on;
-ksdensity(subflow2(:,10)/RTT,'npoints',10000);
+scatter(subflow1(:,1),subflow1(:,7),'MarkerEdgeColor','green');
+hold on;
+scatter(subflow2(:,1),subflow2(:,6),'MarkerEdgeColor','cyan');
+hold on;
+scatter(subflow2(:,1),subflow2(:,7),'MarkerEdgeColor','red');
+legend('subflow1-send','subflow1-recv','subflow2-send','subflow2-recv');
+
 end
 
