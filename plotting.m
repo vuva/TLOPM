@@ -1,5 +1,5 @@
 k=1;
-n=1;
+n=5;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -58,13 +58,13 @@ function[xccdf,yccdf] = getccdf(value)
     plot(xccdf,yccdf);
 end
 function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) >=0.00, :);
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) <1, :);
-rr_latency = rr_latency(rr_latency(:, end) >=0.00, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) >0.00, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) <0.3, :);
+rr_latency = rr_latency(rr_latency(:, end) >0.00, :);
 rr_latency = rr_latency(rr_latency(:, end) <1, :);
-re_latency = re_latency(re_latency(:, end) >=0.00, :);
+re_latency = re_latency(re_latency(:, end) >0.0390, :);
 re_latency = re_latency(re_latency(:, end) <1, :);
-sp_latency = sp_latency(sp_latency(:, end) >=0.00, :);
+sp_latency = sp_latency(sp_latency(:, end) >0.00, :);
 sp_latency = sp_latency(sp_latency(:, end) <1, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
