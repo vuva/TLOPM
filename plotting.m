@@ -8,10 +8,10 @@ set(0,'DefaultLineLineWidth',1);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\loss0.01-asym\';
+prefix='C:\Work\Data\ditg-loss0.01-1.5mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-loss0.01';
+exp_name = 'dag-ditg-loss0.01-1.5mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -59,10 +59,10 @@ function[xccdf,yccdf] = getccdf(value)
 end
 function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
 lrtt_latency = lrtt_latency(lrtt_latency(:, end) >0.00, :);
-lrtt_latency = lrtt_latency(lrtt_latency(:, end) <0.3, :);
+lrtt_latency = lrtt_latency(lrtt_latency(:, end) <1, :);
 rr_latency = rr_latency(rr_latency(:, end) >0.00, :);
 rr_latency = rr_latency(rr_latency(:, end) <1, :);
-re_latency = re_latency(re_latency(:, end) >0.0390, :);
+re_latency = re_latency(re_latency(:, end) >0.00, :);
 re_latency = re_latency(re_latency(:, end) <1, :);
 sp_latency = sp_latency(sp_latency(:, end) >0.00, :);
 sp_latency = sp_latency(sp_latency(:, end) <1, :);
