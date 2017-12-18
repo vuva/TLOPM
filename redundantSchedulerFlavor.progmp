@@ -1,0 +1,37 @@
+/*
+ * Redundant scheduler.
+ */
+SCHEDULER redundantSchedulerFlavor;
+
+VAR sbfCandidates = SUBFLOWS.FILTER(sbf => sbf.CWND > sbf.SKBS_IN_FLIGHT + sbf.QUEUED AND !sbf.THROTTLED AND !sbf.LOSSY);
+
+IF(sbfCandidates.EMPTY) { RETURN; }
+
+/* handle retransmissions (see discussion above) */
+/* Retransmission on all subflows with cwnd */
+IF (!RQ.EMPTY) {
+    VAR retransmissionCandidates = sbfCandidates.FILTER(sbf => sbf.HAS_WINDOW_FOR(RQ.TOP) AND !RQ.TOP.SENT_ON(sbf));
+    IF(!retransmissionCandidates.EMPTY) {
+        FOREACH(VAR sbf IN retransmissionCandidates) {
+            sbf.PUSH(RQ.TOP);
+        }
+        DROP(Q.POP());
+    }
+}
+
+
+IF (!RQ.EMPTY) {
+  VAR sbfCandidate = sbfCandidates.FILTER(sbf => sbf.HAS_WINDOW_FOR(RQ.TOP) AND !RQ.TOP.SENT_ON(sbf)).MIN(sbf => sbf.RTT);
+  IF (sbfCandidate != NULL) {
+    sbfCandidate.PUSH(RQ.POP());
+    RETURN;
+  }
+}
+
+IF(!Q.EMPTY) {
+    /* PUSH it on all currently available subflows */
+    FOREACH(VAR sbf IN sbfCandidates) {
+        sbf.PUSH(Q.TOP);
+    }
+    DROP(Q.POP());
+}

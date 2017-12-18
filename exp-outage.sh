@@ -38,6 +38,14 @@ export SL_EX=$EXP_TYPE"-sp"
 ssh vuva@pc22.filab.uni-hannover.de 'sudo ip link set dev eth2 multipath on'
 sleep 20
 
+ssh vuva@pc22.filab.uni-hannover.de 'sudo python progmp_helper.py -f redundantSchedulerFlavor.progmp'
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=rbs'
+
+sleep 10
+export SL_EX=$EXP_TYPE"-rbs"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+
 done
 rm ~/*.zip.*
 echo done

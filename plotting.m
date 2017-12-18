@@ -1,5 +1,5 @@
 k=1;
-n=1;
+n=5;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -8,10 +8,10 @@ set(0,'DefaultLineLineWidth',1);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='C:\Work\Data\ditg-loss0.01-4.8mbps\';
+prefix='D:\Data\ditg-loss0.01-1.2mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-ditg-loss0.01-4.8mbps';
+exp_name = 'dag-ditg-loss0.01-1.2mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -29,7 +29,7 @@ for i=k:n
 end
 [lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency);
 % plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
-plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
+% plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
 plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
