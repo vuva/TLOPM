@@ -1,39 +1,42 @@
 k=1;
-n=5;
+n=1;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
-set(0,'DefaultLineLineWidth',1);
+set(0,'DefaultLineLineWidth',1.5);
 % rr_dat =cell2mat(loadjson('roundrobin-interupted-data.json')); 
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\ditg-loss0.01-1.2mbps\';
+prefix='D:\Data\ditg-loss0.01-12mbps-rbs\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-ditg-loss0.01-1.2mbps';
+exp_name = 'dag-iperf-loss0.01';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
 sp_latency=[];
+rbs_latency=[];
 
 for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
     rr_dat = csvread(strcat(prefix,exp_name,'-rr-', num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
     sp_dat = csvread(strcat(prefix,exp_name,'-sp-', num2str(i), '.dat' ));
+    rbs_dat = csvread(strcat(prefix,exp_name,'-rbs-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(100:end-100,10));
     rr_latency=vertcat(rr_latency,rr_dat(100:end-100,10));
     re_latency=vertcat(re_latency,re_dat(100:end-100,10));
     sp_latency=vertcat(sp_latency,sp_dat(100:end-100,10));
+    rbs_latency=vertcat(rbs_latency,rbs_dat(100:end-100,10));
 end
-[lrtt_latency,rr_latency,re_latency,sp_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency);
+[lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
 % plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 % plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
-plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency);
+plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
 
-function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency)
+function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     global exp_name;
     
     figure
@@ -46,8 +49,10 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency)
     hold on;
     getccdf(sp_latency);
     hold on;
+    getccdf(rbs_latency);
+    hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','RR','Redundant','SP');   
+    legend('LowRTT','RR','Redundant','SP','ReIfNoQ');   
     set(gca, 'YScale', 'log');
 end
 
@@ -57,7 +62,7 @@ function[xccdf,yccdf] = getccdf(value)
     yccdf = 1-ycdf(1:end-1);
     plot(xccdf,yccdf);
 end
-function[lrtt_latency,rr_latency,re_latency,sp_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency)
+function[lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency]= filterdata(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
 lrtt_latency = lrtt_latency(lrtt_latency(:, end) >0.00, :);
 lrtt_latency = lrtt_latency(lrtt_latency(:, end) <1, :);
 rr_latency = rr_latency(rr_latency(:, end) >0.00, :);
@@ -66,6 +71,8 @@ re_latency = re_latency(re_latency(:, end) >0.00, :);
 re_latency = re_latency(re_latency(:, end) <1, :);
 sp_latency = sp_latency(sp_latency(:, end) >0.00, :);
 sp_latency = sp_latency(sp_latency(:, end) <1, :);
+rbs_latency = rbs_latency(rbs_latency(:, end) >0.00, :);
+rbs_latency = rbs_latency(rbs_latency(:, end) <1, :);
 end
 function[]=plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency)
 global RTT exp_name;
