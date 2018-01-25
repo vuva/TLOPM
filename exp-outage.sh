@@ -16,7 +16,7 @@ export SL_EX=$EXP_TYPE"-re"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
-
+: <<'END'
 ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=roundrobin'
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=roundrobin'
 sleep 10
@@ -24,12 +24,6 @@ export SL_EX=$EXP_TYPE"-rr"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
-ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
-ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
-sleep 10
-export SL_EX=$EXP_TYPE"-lowrtt"
-~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
-sleep 20
 
 ssh vuva@pc22.filab.uni-hannover.de 'sudo ip link set dev eth2 multipath off'
 sleep 10
@@ -43,6 +37,28 @@ ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=rb
 
 sleep 10
 export SL_EX=$EXP_TYPE"-rbs"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+END
+
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+sleep 10
+export SL_EX=$EXP_TYPE"-lowrtt"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=oppredundant'
+ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=oppredundant'
+sleep 10
+export SL_EX=$EXP_TYPE"-opp"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
+ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
+sleep 10
+export SL_EX=$EXP_TYPE"-tag"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
