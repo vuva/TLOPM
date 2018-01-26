@@ -1,5 +1,5 @@
 k=1;
-n=1;
+n=10;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -52,7 +52,7 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     getccdf(rbs_latency);
     hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','RR','Redundant','SP','ReIfNoQ');   
+    legend('LowRTT','RR','Redundant','TagAlong','OPP');   
     set(gca, 'YScale', 'log');
 end
 
@@ -70,7 +70,7 @@ rr_latency = rr_latency(rr_latency(:, end) <1, :);
 re_latency = re_latency(re_latency(:, end) >0.00, :);
 re_latency = re_latency(re_latency(:, end) <1, :);
 sp_latency = sp_latency(sp_latency(:, end) >0.00, :);
-sp_latency = sp_latency(sp_latency(:, end) <1, :);
+sp_latency = sp_latency(sp_latency(:, end) <0.15, :);
 rbs_latency = rbs_latency(rbs_latency(:, end) >0.00, :);
 rbs_latency = rbs_latency(rbs_latency(:, end) <1, :);
 end
