@@ -1,5 +1,5 @@
-k=5;
-n=5;
+k=1;
+n=1;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -8,7 +8,7 @@ set(0,'DefaultLineLineWidth',1.5);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\iperf-loss0.01-with-tagalong\';
+prefix='D:\Data\iperf-maxlag-loss1link\';
 distribution_name = 'on5-off3';
 global exp_name;
 exp_name = 'dag-iperf-loss0.01';
@@ -19,11 +19,11 @@ sp_latency=[];
 rbs_latency=[];
 
 for i=k:n
-    lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
-    rr_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
-    re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-tag-', num2str(i), '.dat' ));
-    rbs_dat = csvread(strcat(prefix,exp_name,'-opp-', num2str(i), '.dat' ));
+    lrtt_dat = csvread(strcat(prefix,exp_name,'-tag-1-',num2str(i), '.dat' ));
+    rr_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
+    re_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-tag-4-', num2str(i), '.dat' ));
+    rbs_dat = csvread(strcat(prefix,exp_name,'-tag-8-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     rr_latency=vertcat(rr_latency,rr_dat(50:end-50,10));
     re_latency=vertcat(re_latency,re_dat(50:end-50,10));
