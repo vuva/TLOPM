@@ -9,6 +9,19 @@ for ((i=1;i<=n;i++)); do
 echo "==== Running Test No. $i/$n ===="
 export SL_I=$i
 
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+sleep 10
+export SL_EX=$EXP_TYPE"-lowrtt"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=oppredundant'
+ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=oppredundant'
+sleep 10
+export SL_EX=$EXP_TYPE"-opp"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
 
 ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=redundant'
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=redundant'

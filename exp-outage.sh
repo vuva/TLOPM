@@ -41,7 +41,7 @@ export SL_EX=$EXP_TYPE"-rbs"
 sleep 20
 END
 
-ssh vuva@pc22.filab.uni-hannover.de ' '
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
 sleep 10
 export SL_EX=$EXP_TYPE"-lowrtt"
