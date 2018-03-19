@@ -1,5 +1,5 @@
 k=1;
-n=10;
+n=1;
 global RTT;
 RTT=1;
 set(0,'DefaultFigureWindowStyle','docked');
@@ -8,10 +8,10 @@ set(0,'DefaultLineLineWidth',1.5);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\iperf-noloss-with-tagalong\';
+prefix='D:\Data\iperf-noloss-cross-poisson7.2mpbs\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-noloss';
+exp_name = 'dag-iperf-noloss-cross-poisson7.2mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -20,9 +20,9 @@ rbs_latency=[];
 
 for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
-    rr_dat = csvread(strcat(prefix,exp_name,'-lowrtt-', num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-tag-', num2str(i), '.dat' ));
+    rr_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-tag-4-', num2str(i), '.dat' ));
     rbs_dat = csvread(strcat(prefix,exp_name,'-opp-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     rr_latency=vertcat(rr_latency,rr_dat(50:end-50,10));
@@ -35,6 +35,23 @@ end
 % plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
 plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
+redundant_thoughput = get_throughput(re_dat);
+lrtt_thoughput = get_throughput(lrtt_dat);
+rr_thoughput = get_throughput(rr_dat);
+sp_thoughput = get_throughput(sp_dat);
+rbs_thoughput = get_throughput(rbs_dat);
+figure
+plot(lrtt_thoughput);
+hold on;
+plot(redundant_thoughput);
+hold on;
+plot(rr_thoughput);
+hold on;
+plot(sp_thoughput);
+hold on;
+plot(rbs_thoughput);
+legend('LowRTT','RE','Tag1','Tag4','OPP'); 
+
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     global exp_name;
@@ -52,7 +69,7 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     getccdf(rbs_latency);
     hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','Tag','Redundant','Tagalong','OPP');   
+    legend('LowRTT','RE','Tag1','Tag4','OPP');   
     set(gca, 'YScale', 'log');
 end
 
@@ -129,6 +146,19 @@ scatter(subflow2(:,1),subflow2(:,6),'MarkerEdgeColor','cyan');
 hold on;
 scatter(subflow2(:,1),subflow2(:,7),'MarkerEdgeColor','red');
 legend('subflow1-send','subflow1-recv','subflow2-send','subflow2-recv');
+
+end
+
+function[thoughput]=get_throughput(sched_dat)
+start_point = sched_dat(1,7);
+end_point=sched_dat(end,7) ;
+time_window= end_point - start_point;
+thoughput = zeros(ceil(time_window),1);
+
+for i=1:size(sched_dat)
+    relative_time = sched_dat(i,7) - start_point;
+    thoughput(floor(relative_time)+1,1) = thoughput(floor(relative_time)+1,1)+ sched_dat(i,11);
+end
 
 end
 

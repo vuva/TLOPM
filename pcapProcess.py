@@ -231,7 +231,7 @@ def process_tcp(sender_pcap, receiver_pcap, src_addrs, dst_addrs):
         if sent_packet_key in receiver_pcap:
             depart_arrive_pairs.append(
                 {'index': index, 'src':int(ipaddress.ip_address(sent_src)), 'dst':int(ipaddress.ip_address(sent_dst)), 'seq': sent_seq, 'ack': sent_ack, 'departure_time': sent_packet.timestamp,
-                 'arrival_time': receiver_pcap[sent_packet_key].timestamp, 'dataseq': sent_packet.rawdataseqno, 'dataack': sent_packet.rawdataackno, 'latency': receiver_pcap[sent_packet_key].timestamp-sent_packet.timestamp})
+                 'arrival_time': receiver_pcap[sent_packet_key].timestamp, 'dataseq': sent_packet.rawdataseqno, 'dataack': sent_packet.rawdataackno, 'latency': receiver_pcap[sent_packet_key].timestamp-sent_packet.timestamp, 'length':sent_len})
             index+=1
             if debug:
                 print(repr(index) + '/' + repr(size))
