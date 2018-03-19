@@ -2,16 +2,18 @@ k=1;
 n=1;
 global RTT;
 RTT=1;
+global TIME_RESOLUTION;
+TIME_RESOLUTION = 0.1;
 set(0,'DefaultFigureWindowStyle','docked');
 set(0,'DefaultLineLineWidth',1.5);
 % rr_dat =cell2mat(loadjson('roundrobin-interupted-data.json')); 
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\iperf-noloss-cross-poisson7.2mpbs\';
+prefix='D:\Data\iperf-noloss-cross-poisson4.8mpbs\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-noloss-cross-poisson7.2mbps';
+exp_name = 'dag-iperf-noloss-cross-poisson4.8mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -52,6 +54,14 @@ hold on;
 plot(rbs_thoughput);
 legend('LowRTT','RE','Tag1','Tag4','OPP'); 
 
+subflow1 = lrtt_dat(~ismember(lrtt_dat(:,2),[167838210]),:);
+subflow2 = lrtt_dat(~ismember(lrtt_dat(:,2),[167838466]),:);
+s1_thoughput = get_throughput(subflow1);
+s2_thoughput = get_throughput(subflow2);
+figure
+plot(s1_thoughput);
+hold on;
+plot(s2_thoughput);
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     global exp_name;
@@ -150,13 +160,14 @@ legend('subflow1-send','subflow1-recv','subflow2-send','subflow2-recv');
 end
 
 function[thoughput]=get_throughput(sched_dat)
+global TIME_RESOLUTION;
 start_point = sched_dat(1,7);
 end_point=sched_dat(end,7) ;
 time_window= end_point - start_point;
-thoughput = zeros(ceil(time_window),1);
+thoughput = zeros(ceil(time_window)/TIME_RESOLUTION,1);
 
 for i=1:size(sched_dat)
-    relative_time = sched_dat(i,7) - start_point;
+    relative_time = (sched_dat(i,7) - start_point)/TIME_RESOLUTION;
     thoughput(floor(relative_time)+1,1) = thoughput(floor(relative_time)+1,1)+ sched_dat(i,11);
 end
 
