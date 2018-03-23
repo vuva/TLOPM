@@ -1,19 +1,19 @@
 k=1;
-n=1;
+n=10;
 global RTT;
 RTT=1;
 global TIME_RESOLUTION;
-TIME_RESOLUTION = 0.1;
+TIME_RESOLUTION = 0.05;
 set(0,'DefaultFigureWindowStyle','docked');
 set(0,'DefaultLineLineWidth',1.5);
 % rr_dat =cell2mat(loadjson('roundrobin-interupted-data.json')); 
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\iperf-noloss-cross-poisson4.8mpbs\';
+prefix='D:\Data\iperf-asym-50-20-noloss-cross-weibull-1-5mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-noloss-cross-poisson4.8mbps';
+exp_name = 'dag-iperf-noloss-cross-poisson0.12mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -24,7 +24,7 @@ for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
     rr_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-tag-4-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-tag-8-', num2str(i), '.dat' ));
     rbs_dat = csvread(strcat(prefix,exp_name,'-opp-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     rr_latency=vertcat(rr_latency,rr_dat(50:end-50,10));
@@ -36,32 +36,33 @@ end
 % plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 % plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
-plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
-redundant_thoughput = get_throughput(re_dat);
-lrtt_thoughput = get_throughput(lrtt_dat);
-rr_thoughput = get_throughput(rr_dat);
-sp_thoughput = get_throughput(sp_dat);
-rbs_thoughput = get_throughput(rbs_dat);
-figure
-plot(lrtt_thoughput);
-hold on;
-plot(redundant_thoughput);
-hold on;
-plot(rr_thoughput);
-hold on;
-plot(sp_thoughput);
-hold on;
-plot(rbs_thoughput);
-legend('LowRTT','RE','Tag1','Tag4','OPP'); 
+plotccdf(lrtt_latency,re_latency,rr_latency,sp_latency,rbs_latency);
+% redundant_thoughput = get_throughput(re_dat);
+% lrtt_thoughput = get_throughput(lrtt_dat);
+% rr_thoughput = get_throughput(rr_dat);
+% sp_thoughput = get_throughput(sp_dat);
+% rbs_thoughput = get_throughput(rbs_dat);
+% figure
+% plot(lrtt_thoughput);
+% hold on;
+% plot(redundant_thoughput);
+% hold on;
+% plot(rr_thoughput);
+% hold on;
+% plot(sp_thoughput);
+% hold on;
+% plot(rbs_thoughput);
+% legend('LowRTT','RE','Tag1','Tag4','OPP'); 
+% 
+% subflow1 = re_dat(~ismember(re_dat(:,2),[167838210]),:);
+% subflow2 = re_dat(~ismember(re_dat(:,2),[167838466]),:);
+% s1_thoughput = get_throughput(subflow1);
+% s2_thoughput = get_throughput(subflow2);
+% figure
+% plot(s1_thoughput);
+% hold on;
+% plot(s2_thoughput);
 
-subflow1 = lrtt_dat(~ismember(lrtt_dat(:,2),[167838210]),:);
-subflow2 = lrtt_dat(~ismember(lrtt_dat(:,2),[167838466]),:);
-s1_thoughput = get_throughput(subflow1);
-s2_thoughput = get_throughput(subflow2);
-figure
-plot(s1_thoughput);
-hold on;
-plot(s2_thoughput);
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     global exp_name;
@@ -79,7 +80,7 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     getccdf(rbs_latency);
     hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','RE','Tag1','Tag4','OPP');   
+    legend('LowRTT','RE','Tag1','Tag8','OPP');   
     set(gca, 'YScale', 'log');
 end
 
