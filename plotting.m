@@ -1,5 +1,5 @@
 k=1;
-n=10;
+n=1;
 global RTT;
 RTT=1;
 global TIME_RESOLUTION;
@@ -10,10 +10,10 @@ set(0,'DefaultLineLineWidth',1.5);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\iperf-asym-50-20-noloss-cross-weibull-1-5mbps\';
+prefix='D:\Data\ditg-asym-10mb-cross-5mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-iperf-noloss-cross-poisson0.12mbps';
+exp_name = 'dag-ditg-noloss-cross-5mbps';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -54,14 +54,14 @@ plotccdf(lrtt_latency,re_latency,rr_latency,sp_latency,rbs_latency);
 % plot(rbs_thoughput);
 % legend('LowRTT','RE','Tag1','Tag4','OPP'); 
 % 
-% subflow1 = re_dat(~ismember(re_dat(:,2),[167838210]),:);
-% subflow2 = re_dat(~ismember(re_dat(:,2),[167838466]),:);
-% s1_thoughput = get_throughput(subflow1);
-% s2_thoughput = get_throughput(subflow2);
-% figure
-% plot(s1_thoughput);
-% hold on;
-% plot(s2_thoughput);
+subflow1 = re_dat(~ismember(re_dat(:,2),[167838210]),:);
+subflow2 = re_dat(~ismember(re_dat(:,2),[167838466]),:);
+s1_thoughput = get_throughput(subflow1);
+s2_thoughput = get_throughput(subflow2);
+figure
+plot(s1_thoughput);
+hold on;
+plot(s2_thoughput);
 
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)

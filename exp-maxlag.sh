@@ -40,12 +40,12 @@ export SL_EX=$EXP_TYPE"-tag-1"
 sleep 20
 
 
-ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=4'
 ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=4'
 sleep 10
-export SL_EX=$EXP_TYPE"-tag-4"
+export SL_EX=$EXP_TYPE"-monkeytail"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
