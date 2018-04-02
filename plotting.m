@@ -10,10 +10,10 @@ set(0,'DefaultLineLineWidth',1.5);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='D:\Data\ditg-asym-10mb-cross-5mbps\';
+prefix='C:\Work\Data\monkeytail-1.5mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
-exp_name = 'dag-ditg-noloss-cross-5mbps';
+exp_name = 'ditg-greedy-non';
 lrtt_latency=[];
 rr_latency=[];
 re_latency=[];
@@ -24,7 +24,7 @@ for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
     rr_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
-    sp_dat = csvread(strcat(prefix,exp_name,'-tag-8-', num2str(i), '.dat' ));
+    sp_dat = csvread(strcat(prefix,exp_name,'-monkeytail-', num2str(i), '.dat' ));
     rbs_dat = csvread(strcat(prefix,exp_name,'-opp-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     rr_latency=vertcat(rr_latency,rr_dat(50:end-50,10));
@@ -32,7 +32,7 @@ for i=k:n
     sp_latency=vertcat(sp_latency,sp_dat(50:end-50,10));
     rbs_latency=vertcat(rbs_latency,rbs_dat(50:end-50,10));
 end
-[lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
+%[lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency]=filterdata(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency);
 % plotcdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 % plotpdf(lrtt_latency,rr_latency,re_latency,sp_latency);
 
@@ -53,15 +53,15 @@ plotccdf(lrtt_latency,re_latency,rr_latency,sp_latency,rbs_latency);
 % hold on;
 % plot(rbs_thoughput);
 % legend('LowRTT','RE','Tag1','Tag4','OPP'); 
-% 
-subflow1 = re_dat(~ismember(re_dat(:,2),[167838210]),:);
-subflow2 = re_dat(~ismember(re_dat(:,2),[167838466]),:);
-s1_thoughput = get_throughput(subflow1);
-s2_thoughput = get_throughput(subflow2);
-figure
-plot(s1_thoughput);
-hold on;
-plot(s2_thoughput);
+
+% subflow1 = re_dat(~ismember(re_dat(:,2),[167838210]),:);
+% subflow2 = re_dat(~ismember(re_dat(:,2),[167838466]),:);
+% s1_thoughput = get_throughput(subflow1);
+% s2_thoughput = get_throughput(subflow2);
+% figure
+% plot(s1_thoughput);
+% hold on;
+% plot(s2_thoughput);
 
 
 function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)

@@ -40,10 +40,7 @@ export SL_EX=$EXP_TYPE"-tag-1"
 sleep 20
 
 
-ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
-ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
-ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=4'
-ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=4'
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default;sudo rmmod -f mptcp_monkeytail;sudo insmod ~/scheduler-modules/mptcp_monkeytail.ko; sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 sleep 10
 export SL_EX=$EXP_TYPE"-monkeytail"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
@@ -58,6 +55,13 @@ sleep 10
 export SL_EX=$EXP_TYPE"-tag-8"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
+
+ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_scheduler=default;sudo  rmmod -f mptcp_monkeytail;sudo  insmod ~/mptcp/net/mptcp/mptcp_monkeytail.ko;sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
+sleep 10
+export SL_EX=$EXP_TYPE"-new-monkeytail"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
+
 
 ssh vuva@pc21.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=1'
 ssh vuva@pc22.filab.uni-hannover.de 'sudo sysctl -w net.mptcp.mptcp_maxlag=1'
