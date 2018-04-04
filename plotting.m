@@ -1,5 +1,5 @@
 k=1;
-n=1;
+n=5;
 global RTT;
 RTT=1;
 global TIME_RESOLUTION;
@@ -10,7 +10,7 @@ set(0,'DefaultLineLineWidth',1.5);
 % re_dat=cell2mat(loadjson('redundant-interupted-data.json')); 
 % rr_latency =[rr_dat.arrival_time].' -  [rr_dat.departure_time].'; 
 % re_latency =[re_dat.arrival_time].' -  [re_dat.departure_time].';
-prefix='C:\Work\Data\monkeytail-1.5mbps\';
+prefix='D:\Data\monkeytail-1.5mbps\';
 distribution_name = 'on5-off3';
 global exp_name;
 exp_name = 'ditg-greedy-non';
@@ -23,9 +23,9 @@ rbs_latency=[];
 for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
-    rr_dat = csvread(strcat(prefix,exp_name,'-tag-1-', num2str(i), '.dat' ));
+    rr_dat = csvread(strcat(prefix,exp_name,'-new-monkeytail-', num2str(i), '.dat' ));
     sp_dat = csvread(strcat(prefix,exp_name,'-monkeytail-', num2str(i), '.dat' ));
-    rbs_dat = csvread(strcat(prefix,exp_name,'-opp-', num2str(i), '.dat' ));
+    rbs_dat = csvread(strcat(prefix,exp_name,'-tag-8-', num2str(i), '.dat' ));
     lrtt_latency=vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     rr_latency=vertcat(rr_latency,rr_dat(50:end-50,10));
     re_latency=vertcat(re_latency,re_dat(50:end-50,10));
@@ -80,7 +80,7 @@ function[]=plotccdf(lrtt_latency,rr_latency,re_latency,sp_latency,rbs_latency)
     getccdf(rbs_latency);
     hold on;
     title(strcat('CCDF-',exp_name));
-    legend('LowRTT','RE','Tag1','Tag8','OPP');   
+    legend('LowRTT','RE','NewMKT','MKT','Tag-8');   
     set(gca, 'YScale', 'log');
 end
 
