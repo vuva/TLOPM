@@ -1,7 +1,7 @@
 %=========================== SET PARAMS ===================================
 k=1;
 n=1;
-prefix='D:\Data\conceal-1link\';
+prefix='D:\Data\conceal-ditg\';
 distribution_name = 'on5-off3';
 global exp_name;
 exp_name = 'conceal-ditg';
@@ -44,11 +44,11 @@ end
 %============================= PLOTS ======================================
 
 plotccdf(labels,lrtt_latency,re_latency,rr_latency);
-plot_throughput(labels,lrtt_dat,re_dat,rr_dat);
+% plot_throughput(labels,lrtt_dat,re_dat,rr_dat);
 
-% plot_subflows(lrtt_dat);
+plot_subflows("LowRTT",lrtt_dat);
 % plot_subflows(rr_dat);
-% plot_subflows(re_dat);
+plot_subflows("Redundant",re_dat);
 
 %================================= END ====================================
 
@@ -142,7 +142,7 @@ function[] = plot_throughput(labels,varargin)
     set(gca,'XTickLabel',labels);
 end
 
-function[] = plot_subflows(flow_data)
+function[] = plot_subflows(plot_title,flow_data)
     [sf_group,sf_senders] = findgroups(flow_data(:,2));
     sf_throughput = splitapply(@(x){(get_throughput(x))},flow_data,sf_group);
     figure
@@ -150,6 +150,7 @@ function[] = plot_subflows(flow_data)
         plot(sf_throughput{i,1}(:,1), sf_throughput{i,1}(:,2));
         hold on;
     end
+    title(plot_title);
     legend(dec2ip(sf_senders));
     
 end
