@@ -7,7 +7,7 @@ global exp_name;
 exp_name = 'conceal-ditg';
 
 global RTT; RTT=1;
-global TIME_RESOLUTION; TIME_RESOLUTION = 1;
+global TIME_RESOLUTION; TIME_RESOLUTION = .1;
 
 set(0,'DefaultFigureWindowStyle','docked');
 set(0,'DefaultLineLineWidth',1.5);
@@ -28,8 +28,10 @@ rbs_latency=[];
 labels=[];
 for i=k:n
     lrtt_dat = csvread(strcat(prefix,exp_name,'-lowrtt-',num2str(i), '.dat' ));
+%     lrtt_dat=filterdata(lrtt_dat);
     lrtt_latency = vertcat(lrtt_latency,lrtt_dat(50:end-50,10));
     labels=[labels, "LowRTT"];
+    
     
     re_dat = csvread(strcat(prefix,exp_name,'-re-', num2str(i), '.dat' ));
     re_latency = vertcat(re_latency,re_dat(50:end-50,10));
@@ -44,20 +46,20 @@ end
 %============================= PLOTS ======================================
 
 plotccdf(labels,lrtt_latency,re_latency,rr_latency);
-% plot_throughput(labels,lrtt_dat,re_dat,rr_dat);
+plot_throughput(labels,lrtt_dat,re_dat,rr_dat);
 
-plot_subflows("LowRTT",lrtt_dat);
+% plot_subflows("LowRTT",lrtt_dat);
 % plot_subflows(rr_dat);
+plot_subflows("LowRTT",lrtt_dat);
 plot_subflows("Redundant",re_dat);
+plot_subflows("RR",rr_dat);
 
 %================================= END ====================================
 
 
-function[]= filterdata(varargin)
-    for i=1:nargin
-        varargin = varargin(varargin(:, end) >0.00, :);
-        varargin = varargin(varargin(:, end) <1, :);
-    end
+function [filteredData]= filterdata(data)
+        filteredData = data(data(:, 7) > 1.548823970274599e+09, :);
+        filteredData = filteredData(filteredData(:, 7) <1.549522290274599e+09, :);
 end
 
 function[]=plotccdf(labels,varargin)
@@ -111,20 +113,23 @@ end
 
 function[thoughput]=get_throughput(sched_dat)
     global TIME_RESOLUTION;
-    start_point = sched_dat(1,7);
-    end_point=sched_dat(end,7) ;
+    TIME_COLUMM = 6;
+    start_point = sched_dat(1,TIME_COLUMM);
+    end_point=sched_dat(end,TIME_COLUMM) ;
     time_window= end_point - start_point;
     thoughput = zeros(ceil(time_window)/TIME_RESOLUTION,2);
     
     for i=1:size(thoughput)
-        thoughput(i,1) = (start_point + i*ceil(time_window)/TIME_RESOLUTION);
+        thoughput(i,1) = (i*TIME_RESOLUTION);
+
     end
 
     for i=1:size(sched_dat)
-        relative_time = (sched_dat(i,7) - start_point)/TIME_RESOLUTION;
-        thoughput(floor(relative_time)+1,2) = thoughput(floor(relative_time)+1,2)+ sched_dat(i,11)*8;
+        relative_time = (sched_dat(i,TIME_COLUMM) - start_point)/TIME_RESOLUTION;
+        thoughput(floor(relative_time)+1,2) = thoughput(floor(relative_time)+1,2)+ sched_dat(i,11)*8/TIME_RESOLUTION;
     end
-
+    
+    % trim the results
     thoughput = thoughput(20:end-20,:);
 end
 
@@ -143,6 +148,7 @@ function[] = plot_throughput(labels,varargin)
 end
 
 function[] = plot_subflows(plot_title,flow_data)
+    
     [sf_group,sf_senders] = findgroups(flow_data(:,2));
     sf_throughput = splitapply(@(x){(get_throughput(x))},flow_data,sf_group);
     figure
@@ -150,8 +156,14 @@ function[] = plot_subflows(plot_title,flow_data)
         plot(sf_throughput{i,1}(:,1), sf_throughput{i,1}(:,2));
         hold on;
     end
+%     flow_throughput=get_throughput(flow_data);
+%     figure
+%     plot(flow_throughput(:,1), flow_throughput(:,2));
+%     hold on;
+%     legend("All");
     title(plot_title);
     legend(dec2ip(sf_senders));
+
     
 end
 
