@@ -18,18 +18,17 @@ export SL_EX=$EXP_TYPE"-re"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
+ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+ssh vuva@$SERVER 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
+sleep 10
+export SL_EX=$EXP_TYPE"-lowrtt"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 20
 
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=roundrobin'
 ssh vuva@$SERVER 'sudo sysctl -w net.mptcp.mptcp_scheduler=roundrobin'
 sleep 10
 export SL_EX=$EXP_TYPE"-rr"
-~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
-sleep 20
-
-ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
-ssh vuva@$SERVER 'sudo sysctl -w net.mptcp.mptcp_scheduler=default'
-sleep 10
-export SL_EX=$EXP_TYPE"-lowrtt"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 20
 
