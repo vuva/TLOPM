@@ -31,12 +31,6 @@ sleep 5
 export SL_EX=$EXP_TYPE"-opp"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 10
-ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=tagalong'
-ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_maxlag=8'
-sleep 5
-export SL_EX=$EXP_TYPE"-tag-8"
-~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
-sleep 10
 
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_desired_latency=20000'
@@ -66,13 +60,14 @@ export SL_EX=$EXP_TYPE"-newmonkey-50"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 10
 
-END
+
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_desired_latency=60000'
 sleep 5
 export SL_EX=$EXP_TYPE"-newmonkey-60"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 10
+
 
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_desired_latency=70000'
@@ -87,6 +82,16 @@ sleep 5
 export SL_EX=$EXP_TYPE"-newmonkey-80"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 10
+END
+#: <<'END'
+
+ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
+ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_desired_latency=90000'
+sleep 5
+export SL_EX=$EXP_TYPE"-newmonkey-90"
+~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
+sleep 10
+
 
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=monkeytail'
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_desired_latency=100000'
@@ -101,6 +106,7 @@ sleep 5
 export SL_EX=$EXP_TYPE"-newmonkey-150"
 ~/sshlauncher/sshlauncher outage-$EXP_TYPE.config
 sleep 10
+
 
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_scheduler=lazytail'
 ssh vuva@$CLIENT 'sudo sysctl -w net.mptcp.mptcp_maxlag=0'
